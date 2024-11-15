@@ -25,7 +25,7 @@ app.get('/api/hello', function (req, res) {
 });
 
 // Rota para /api/:date?
-app.get('/api/:date?', (req, res) => {
+app.get('/api/data/:date?', (req, res) => {
   const dateString = req.params.date;
   let date;
 
