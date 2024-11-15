@@ -24,6 +24,33 @@ app.get('/api/hello', function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
+// Rota para /api/:date?
+app.get('/api/:date?', (req, res) => {
+  const dateString = req.params.date;
+  let date;
+
+  // Se não houver parâmetro de data, usar a data atual
+  if (!dateString) {
+    date = new Date();
+  } else {
+    // Verificar se a data é um timestamp Unix
+    if (!isNaN(dateString)) {
+      date = new Date(parseInt(dateString));
+    } else {
+      date = new Date(dateString);
+    }
+  }
+
+  // Verificar se a data é válida
+  if (isNaN(date.getTime())) {
+    return res.json({ error: 'Invalid Date' });
+  }
+
+  const unixTimestamp = date.getTime();
+  const utcString = date.toUTCString();
+  res.json({ unix: unixTimestamp, utc: utcString });
+});
+
 // Rota para /api/whoami
 app.get('/api/whoami', (req, res) => {
   // Obter o endereço IP do cliente usando req.socket
