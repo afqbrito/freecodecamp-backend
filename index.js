@@ -1,20 +1,20 @@
 require('dotenv').config();
-
 const express = require('express');
 const bodyParser = require('body-parser');
+const usersRoutes = require('./routes/usersRoutes');
+const exercisesRoutes = require('./routes/exercisesRoutes');
+
 const dns = require('dns');
+const cors = require('cors');
 
 const app = express();
-const cors = require('cors');
-const port = process.env.PORT || 3000;
-
-app.use(cors());
 
 app.use(express.static('public'));
-// app.use('/public', express.static(`${process.cwd()}/public`));
+app.use(cors());
 
-// Middleware to parse JSON bodies
+// Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
@@ -120,7 +120,12 @@ app.get('/api/shorturl/:shortUrl', (req, res) => {
   }
 });
 
+// Conectar rotas
+app.use('/api/users', usersRoutes);
+app.use('/api/users', exercisesRoutes);
+
 // listen for requests :)
-var listener = app.listen(process.env.PORT || 3000, function () {
+const PORT = process.env.PORT || 3000;
+var listener = app.listen(PORT, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
