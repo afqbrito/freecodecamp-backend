@@ -3,14 +3,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
+const exerciseTracker = require('./routes/usersRoutes');
+const exercisesRoutes = require('./routes/exercisesRoutes');
 const dateRoutes = require('./routes/dateRoutes');
 const whoamiRoutes = require('./routes/whoamiRoutes');
 const urlShortenerRoutes = require('./routes/urlShortenerRoutes');
-const usersRoutes = require('./routes/usersRoutes');
+const fileMetadataRoutes = require('./routes/fileMetadataRoutes');
 
 const app = express();
 
-app.use(express.static('public'));
+app.use('/public', express.static(process.cwd() + '/public'));
 app.use(cors());
 
 // Middleware
@@ -30,7 +32,8 @@ app.get('/api/hello', function (req, res) {
 app.use(dateRoutes);
 app.use(whoamiRoutes);
 app.use(urlShortenerRoutes);
-app.use(usersRoutes);
+app.use(exerciseTracker);
+app.use(fileMetadataRoutes);
 
 // listen for requests :)
 const PORT = process.env.PORT || 3000;
