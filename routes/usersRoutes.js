@@ -2,8 +2,12 @@ const express = require('express');
 const router = express.Router();
 const usersController = require('../controllers/usersController');
 
-// Definindo rotas para usuários
-router.post('/', usersController.createUser);
-router.get('/', usersController.getAllUsers);
+const ENDPOINT = '/api/users';
+
+router.post(ENDPOINT, usersController.createUser);
+router.get(ENDPOINT, usersController.getAllUsers);
+
+router.post(ENDPOINT + '/:_id/exercises', usersController.addExercise);
+router.get(ENDPOINT + '/:_id/logs', usersController.getExerciseLog);
 
 module.exports = router;

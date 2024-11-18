@@ -1,11 +1,12 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const usersRoutes = require('./routes/usersRoutes');
-const exercisesRoutes = require('./routes/exercisesRoutes');
-
-const dns = require('dns');
 const cors = require('cors');
+
+const dateRoutes = require('./routes/dateRoutes');
+const whoamiRoutes = require('./routes/whoamiRoutes');
+const urlShortenerRoutes = require('./routes/urlShortenerRoutes');
+const usersRoutes = require('./routes/usersRoutes');
 
 const app = express();
 
@@ -25,104 +26,11 @@ app.get('/api/hello', function (req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-// Rota para /api/:date?
-app.get('/api/data/:date?', (req, res) => {
-  const dateString = req.params.date;
-  let date;
-
-  // Se não houver parâmetro de data, usar a data atual
-  if (!dateString) {
-    date = new Date();
-  } else {
-    // Verificar se a data é um timestamp Unix
-    if (!isNaN(dateString)) {
-      date = new Date(parseInt(dateString));
-    } else {
-      date = new Date(dateString);
-    }
-  }
-
-  // Verificar se a data é válida
-  if (isNaN(date.getTime())) {
-    return res.json({ error: 'Invalid Date' });
-  }
-
-  const unixTimestamp = date.getTime();
-  const utcString = date.toUTCString();
-  res.json({ unix: unixTimestamp, utc: utcString });
-});
-
-// Rota para /api/whoami
-app.get('/api/whoami', (req, res) => {
-  // Obter o endereço IP do cliente usando req.socket
-  const ipaddress = req.ip || req.socket.remoteAddress;
-
-  // Obter o idioma preferido do cabeçalho Accept-Language
-  const language = req.headers['accept-language'];
-
-  // Obter o software (User-Agent) do cabeçalho User-Agent
-  const software = req.headers['user-agent'];
-
-  // Retornar as informações em um objeto JSON
-  res.json({
-    ipaddress: ipaddress,
-    language: language,
-    software: software,
-  });
-});
-
-// In-memory storage for URLs
-const urlDatabase = {};
-let urlCounter = 1;
-
-// Endpoint to create a short URL
-app.post('/api/shorturl', (req, res) => {
-  const url = req.body.url;
-
-  // Validate URL using WHATWG URL API
-  let hostname;
-  try {
-    const myURL = new URL(url);
-    hostname = myURL.hostname;
-  } catch (err) {
-    return res.json({ error: 'invalid url' });
-  }
-
-  // Check if the URL is valid using DNS
-  dns.lookup(hostname, err => {
-    if (err) {
-      return res.json({ error: 'invalid url' });
-    }
-
-    // Check if the URL is already stored
-    let shortUrl = Object.keys(urlDatabase).find(key => urlDatabase[key] === url);
-
-    // If URL is not already stored, add it
-    if (!shortUrl) {
-      shortUrl = urlCounter++;
-      urlDatabase[shortUrl] = url;
-    }
-
-    // Respond with JSON containing the original and short URL
-    res.json({ original_url: url, short_url: shortUrl });
-  });
-});
-
-// Endpoint to redirect to the original URL
-app.get('/api/shorturl/:shortUrl', (req, res) => {
-  const shortUrl = req.params.shortUrl;
-  const originalUrl = urlDatabase[shortUrl];
-
-  if (originalUrl) {
-    res.redirect(originalUrl);
-  } else {
-    res.json({ error: 'No short URL found for the given input' });
-  }
-});
-
 // Conectar rotas
-app.use('/api/users', usersRoutes);
-app.use('/api/users', exercisesRoutes);
+app.use(dateRoutes);
+app.use(whoamiRoutes);
+app.use(urlShortenerRoutes);
+app.use(usersRoutes);
 
 // listen for requests :)
 const PORT = process.env.PORT || 3000;
