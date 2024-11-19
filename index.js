@@ -7,7 +7,6 @@ const app = express();
 
 app.use(cors());
 app.use(express.static('public'));
-app.use('/public', express.static(process.cwd() + '/public'));
 
 const exerciseTracker = require('./src/routes/exerciseTracker');
 const dateRoutes = require('./src/routes/dateRoutes');
