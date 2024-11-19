@@ -1,18 +1,19 @@
-require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const cors = require('cors');
+const bodyParser = require('body-parser');
+require('dotenv').config();
+
+const app = express();
+
+app.use(cors());
+app.use(express.static('public'));
+app.use('/public', express.static(process.cwd() + '/public'));
 
 const exerciseTracker = require('./src/routes/exerciseTracker');
 const dateRoutes = require('./src/routes/dateRoutes');
 const whoamiRoutes = require('./src/routes/whoamiRoutes');
 const urlShortenerRoutes = require('./src/routes/urlShortenerRoutes');
 const fileMetadataRoutes = require('./src/routes/fileMetadataRoutes');
-
-const app = express();
-
-app.use('/public', express.static(process.cwd() + '/public'));
-app.use(cors());
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
