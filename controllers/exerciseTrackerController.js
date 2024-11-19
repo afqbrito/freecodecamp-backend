@@ -1,8 +1,8 @@
 const { v4: uuidv4 } = require('uuid');
-const userModels = require('../models/userModels');
+const exerciseTracker = require('../models/exerciseTrackerModel');
 
-const users = userModels.users;
-const exercises = userModels.exercises;
+const users = exerciseTracker.users;
+const exercises = exerciseTracker.exercises;
 
 // Criar um novo usuário
 exports.createUser = (req, res) => {

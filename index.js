@@ -3,8 +3,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const exerciseTracker = require('./routes/usersRoutes');
-const exercisesRoutes = require('./routes/exercisesRoutes');
+const exerciseTracker = require('./routes/exerciseTracker');
 const dateRoutes = require('./routes/dateRoutes');
 const whoamiRoutes = require('./routes/whoamiRoutes');
 const urlShortenerRoutes = require('./routes/urlShortenerRoutes');
