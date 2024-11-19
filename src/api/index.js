@@ -8,18 +8,18 @@ const app = express();
 app.use(cors());
 app.use(express.static('public'));
 
-const exerciseTracker = require('./src/routes/exerciseTracker');
-const dateRoutes = require('./src/routes/dateRoutes');
-const whoamiRoutes = require('./src/routes/whoamiRoutes');
-const urlShortenerRoutes = require('./src/routes/urlShortenerRoutes');
-const fileMetadataRoutes = require('./src/routes/fileMetadataRoutes');
+const exerciseTracker = require('../routes/exerciseTracker');
+const dateRoutes = require('../routes/dateRoutes');
+const whoamiRoutes = require('../routes/whoamiRoutes');
+const urlShortenerRoutes = require('../routes/urlShortenerRoutes');
+const fileMetadataRoutes = require('../routes/fileMetadataRoutes');
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/src/views/index.html');
+  res.sendFile(process.cwd() + '/src/views/index.html');
 });
 
 // your first API endpoint...
