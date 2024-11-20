@@ -8,11 +8,11 @@ const app = express();
 app.use(cors());
 app.use(express.static('public'));
 
-const exerciseTracker = require('../routes/exerciseTracker');
-const dateRoutes = require('../routes/dateRoutes');
-const whoamiRoutes = require('../routes/whoamiRoutes');
-const urlShortenerRoutes = require('../routes/urlShortenerRoutes');
-const fileMetadataRoutes = require('../routes/fileMetadataRoutes');
+const exerciseTracker = require('./routes/exerciseTracker');
+const dateRoutes = require('./routes/dateRoutes');
+const whoamiRoutes = require('./routes/whoamiRoutes');
+const urlShortenerRoutes = require('./routes/urlShortenerRoutes');
+const fileMetadataRoutes = require('./routes/fileMetadataRoutes');
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
