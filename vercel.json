@@ -6,7 +6,7 @@
             "destination": "/api"
         },
         {
-            "source": "/:date?",
+            "source": "/:date",
             "destination": "/api/data/:date?"
         }
     ]
