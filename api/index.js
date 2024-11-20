@@ -19,7 +19,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 app.get('/', function (req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
+  res.sendFile(__dirname + '/views/index.html');
 });
 
 // your first API endpoint...
