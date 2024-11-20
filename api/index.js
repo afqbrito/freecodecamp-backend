@@ -19,9 +19,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // Error: ENOENT: no such file or directory, stat '/var/task/api/views/index.html'
+// views/index.html
 app.get('/', function (req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
-  // res.sendFile(__dirname + '/views/index.html');
+  res.sendFile('views/index.html');
+  // res.sendFile(process.cwd() + '/views/index.html');
 });
 
 // your first API endpoint...
