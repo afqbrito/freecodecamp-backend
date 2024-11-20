@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -18,11 +19,10 @@ const fileMetadataRoutes = require('../routes/fileMetadataRoutes');
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-// Error: ENOENT: no such file or directory, stat '/var/task/api/views/index.html'
-// views/index.html
+const pathViews = path.join(__dirname, '..', 'views');
+
 app.get('/', function (req, res) {
-  res.sendFile('views/index.html');
-  // res.sendFile(process.cwd() + '/views/index.html');
+  res.sendFile('index.html', { root: pathViews });
 });
 
 // your first API endpoint...
