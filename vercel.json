@@ -1,13 +1,9 @@
 {
     "version": 2,
-    "routes": [
+    "rewrites": [
         {
-            "src": "/(*.)",
-            "dest": "/api"
-        },
-        {
-            "src": "/api/whoami",
-            "dest": "/api/whoami"
+            "source": "/(.*)",
+            "destination": "/api"
         }
     ]
 }
