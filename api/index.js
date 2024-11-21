@@ -9,10 +9,10 @@ const app = express();
 app.use(cors());
 app.use(express.static('public'));
 
-const exerciseTracker = require('../routes/exerciseTracker');
 const dateRoutes = require('../routes/dateRoutes');
 const whoamiRoutes = require('../routes/whoamiRoutes');
 const urlShortenerRoutes = require('../routes/urlShortenerRoutes');
+const exerciseTrackerRoutes = require('../routes/exerciseTracker');
 const fileMetadataRoutes = require('../routes/fileMetadataRoutes');
 
 // Middleware
@@ -34,7 +34,7 @@ app.get('/api/hello', function (req, res) {
 app.use(dateRoutes);
 app.use(whoamiRoutes);
 app.use(urlShortenerRoutes);
-app.use(exerciseTracker);
+app.use(exerciseTrackerRoutes);
 app.use(fileMetadataRoutes);
 
 // listen for requests :)
