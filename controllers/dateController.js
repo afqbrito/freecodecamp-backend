@@ -8,8 +8,8 @@ function obterOutraRota(nomeRota) {
     whoami: whoamiController.getWhoami,
   };
 
-  if (nomeRota && outrasRotas[dateString]) {
-    return outrasRotas[dateString];
+  if (nomeRota && outrasRotas[nomeRota]) {
+    return outrasRotas[nomeRota];
   }
 
   return null;
