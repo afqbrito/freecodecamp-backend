@@ -20,7 +20,7 @@ exports.getDate = (req, res) => {
   let outraRota = obterOutraRota(dateString);
 
   if (outraRota) {
-    return outras(req, res);
+    return outraRota(req, res);
   }
 
   let date;
