@@ -12,7 +12,7 @@ app.use(express.static('public'));
 const dateRoutes = require('../routes/dateRoutes');
 const whoamiRoutes = require('../routes/whoamiRoutes');
 const urlShortenerRoutes = require('../routes/urlShortenerRoutes');
-const exerciseTrackerRoutes = require('../routes/exerciseTracker');
+const exerciseTrackerRoutes = require('../routes/exerciseTrackerRoutes');
 const fileMetadataRoutes = require('../routes/fileMetadataRoutes');
 
 // Middleware
