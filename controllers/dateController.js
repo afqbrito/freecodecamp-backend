@@ -1,16 +1,29 @@
 const whoamiController = require('./whoamiController');
+const urlShortenerController = require('./urlShortenerController');
+const exerciseTrackerController = require('./exerciseTrackerController');
+const fileMetadataController = require('./fileMetadataController');
 
-const outrasRotas = {
-  whoami: whoamiController.getWhoami,
-};
+function obterOutraRota(nomeRota) {
+  const outrasRotas = {
+    whoami: whoamiController.getWhoami,
+  };
+
+  if (nomeRota && outrasRotas[dateString]) {
+    return outrasRotas[dateString];
+  }
+
+  return null;
+}
 
 exports.getDate = (req, res) => {
   const dateString = req.params.date;
-  let date;
+  let outraRota = obterOutraRota(dateString);
 
-  if (dateString && outrasRotas[dateString]) {
-    return outrasRotas[dateString](req, res);
+  if (outraRota) {
+    return outras(req, res);
   }
+
+  let date;
 
   if (!dateString) {
     date = new Date();
