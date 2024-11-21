@@ -2,12 +2,8 @@
     "version": 2,
     "rewrites": [
         {
-            "source": "/api/whoami",
-            "destination": "/api/whoami"
-        },
-        {
-            "source": "/(.*)",
-            "destination": "/api"
+            "source": "/",
+            "destination": "/api/date"
         }
     ]
 }
