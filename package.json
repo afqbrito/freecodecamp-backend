@@ -6,7 +6,7 @@
   "scripts": {
     "build": "npm install",
     "start": "node api/index.js",
-    "watch": "node --watch api/index.js"
+    "watch": "nodemon api/index.js"
   },
   "dependencies": {
     "@eslint/config-array": "^0.19.0",
@@ -36,5 +36,9 @@
     "node",
     "express"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.7"
+  }
 }
