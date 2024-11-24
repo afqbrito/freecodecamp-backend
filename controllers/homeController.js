@@ -15,6 +15,10 @@ app.use(express.static('public'));
 // Define o caminho para as visualizações
 const pathViews = path.join(__dirname, '..', 'views');
 
+// Adiciona o middleware para servir arquivos estáticos
+app.use(express.static(pathViews));
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
 // Rota raiz que serve uma página HTML
 app.get('/', function (_req, res) {
   res.sendFile('index.html', { root: pathViews });
