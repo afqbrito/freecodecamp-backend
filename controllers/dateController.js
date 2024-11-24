@@ -13,7 +13,7 @@ exports.getDate = (req, res) => {
   }
 
   if (isNaN(date.getTime())) {
-    return res.json({ error: 'Invalid Date:' });
+    return res.json({ error: 'Invalid Date' });
   }
 
   const unixTimestamp = date.getTime();
