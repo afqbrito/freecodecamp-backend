@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs');
 
 // Defina o caminho de armazenamento em um local acessível
-const UPLOAD_DIR = path.join(__dirname, '../uploads');
+const UPLOAD_DIR = '/tmp/uploads';
 
 // Função para garantir que o diretório de upload exista
 function ensureUploadDirExists() {
