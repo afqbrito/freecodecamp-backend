@@ -1,0 +1,506 @@
+<início do arquivo './.gitignore'>
+node_modules
+.env*
+.vercel
+<fim do arquivo './.gitignore'>
+
+<início do arquivo './.vscode/launch.json'>
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Depurar e observar alterações",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run",
+                "watch"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "console": "integratedTerminal",
+            "env": {
+                "NODE_ENV": "development"
+            }
+        }
+    ]
+}
+<fim do arquivo './.vscode/launch.json'>
+
+<início do arquivo './README.md'>
+# FreeCodeCamp - Back End Development and APIs
+
+## 1 - Timestamp Microservice
+
+This is the boilerplate code for the Timestamp Microservice project.
+Instructions for building your project can be found at <https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/timestamp-microservice>
+
+## 2 - Request Header Parser Microservice
+
+This is the boilerplate for the Request Header Parser Microservice project.
+Instructions for building your project can be found at <https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/request-header-parser-microservice>
+
+## 3 - URL Shortener Microservice
+
+This is the boilerplate code for the URL Shortener Microservice project.
+Instructions for building your project can be found at <https://www.freecodecamp.org/learn/back-end-development-and-apis/back-end-development-and-apis-projects/url-shortener-microservice>.
+
+## 4 - Exercise Tracker
+
+This is the boilerplate for the Exercise Tracker project.
+Instructions for building your project can be found at <https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/exercise-tracker>
+
+## 5 - File Metadata Microservice
+
+This is the boilerplate for the File Metadata Microservice project.
+Instructions for building your project can be found at <https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/file-metadata-microservice>
+<fim do arquivo './README.md'>
+
+<início do arquivo './api/index.js'>
+const app = require('../controllers/homeController');
+
+// listen for requests :)
+const PORT = process.env.PORT || 3000;
+var listener = app.listen(PORT, function () {
+  console.log('Your app is listening on port ' + listener.address().port);
+});
+<fim do arquivo './api/index.js'>
+
+<início do arquivo './controllers/dateController.js'>
+exports.getDate = (req, res) => {
+  const dateString = req.params.date;
+  let date;
+
+  if (!dateString) {
+    date = new Date();
+  } else {
+    if (!isNaN(dateString)) {
+      date = new Date(parseInt(dateString));
+    } else {
+      date = new Date(dateString);
+    }
+  }
+
+  if (isNaN(date.getTime())) {
+    return res.json({ error: 'Invalid Date' });
+  }
+
+  const unixTimestamp = date.getTime();
+  const utcString = date.toUTCString();
+  res.json({ unix: unixTimestamp, utc: utcString });
+};
+<fim do arquivo './controllers/dateController.js'>
+
+<início do arquivo './controllers/exerciseTrackerController.js'>
+const { v4: uuidv4 } = require('uuid');
+const exerciseTracker = require('../models/exerciseTrackerModel');
+
+const users = exerciseTracker.users;
+const exercises = exerciseTracker.exercises;
+
+// Criar um novo usuário
+exports.createUser = (req, res) => {
+  const username = req.body.username;
+  const _id = uuidv4();
+  const newUser = { username, _id };
+  users.push(newUser);
+  res.json(newUser);
+};
+
+// Obter lista de todos os usuários
+exports.getAllUsers = (req, res) => {
+  res.json(users);
+};
+
+// Adicionar um exercício para um usuário
+exports.addExercise = (req, res) => {
+  const { _id } = req.params;
+  const { description, duration, date } = req.body;
+  const user = users.find(user => user._id === _id);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  const exerciseDate = date ? new Date(date) : new Date();
+  if (isNaN(exerciseDate.getTime())) {
+    return res.json({ error: 'Invalid Date' });
+  }
+
+  const newExercise = {
+    description,
+    duration: Number(duration),
+    date: exerciseDate.toDateString(),
+    _id: user._id,
+  };
+
+  exercises.push(newExercise);
+
+  res.json({
+    _id: user._id,
+    username: user.username,
+    description: newExercise.description,
+    duration: newExercise.duration,
+    date: newExercise.date,
+  });
+};
+
+// Obter o log de exercícios de um usuário
+exports.getExerciseLog = (req, res) => {
+  const { _id } = req.params;
+  const { from, to, limit } = req.query;
+  const user = users.find(user => user._id === _id);
+
+  if (!user) {
+    return res.status(404).json({ error: 'User not found' });
+  }
+
+  let userExercises = exercises.filter(ex => ex._id === _id);
+
+  if (from) {
+    const fromDate = new Date(from);
+    if (!isNaN(fromDate.getTime())) {
+      userExercises = userExercises.filter(ex => new Date(ex.date) >= fromDate);
+    }
+  }
+
+  if (to) {
+    const toDate = new Date(to);
+    if (!isNaN(toDate.getTime())) {
+      userExercises = userExercises.filter(ex => new Date(ex.date) <= toDate);
+    }
+  }
+
+  if (limit) {
+    userExercises = userExercises.slice(0, Number(limit));
+  }
+
+  const log = userExercises.map(ex => ({
+    description: ex.description,
+    duration: ex.duration,
+    date: ex.date,
+  }));
+
+  res.json({
+    _id: user._id,
+    username: user.username,
+    count: log.length,
+    log: log,
+  });
+};
+<fim do arquivo './controllers/exerciseTrackerController.js'>
+
+<início do arquivo './controllers/fileMetadataController.js'>
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Defina o caminho de armazenamento em um local acessível
+const UPLOAD_DIR = '/tmp/uploads';
+
+// Função para garantir que o diretório de upload exista
+function ensureUploadDirExists() {
+  if (!fs.existsSync(UPLOAD_DIR)) {
+    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  }
+}
+
+// Configuração do armazenamento
+const storage = multer.diskStorage({
+  destination: function (_req, _file, cb) {
+    ensureUploadDirExists(); // Certifica-se de que o diretório de upload existe
+    cb(null, UPLOAD_DIR);
+  },
+  filename: function (_req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  },
+});
+
+// Configuração do multer
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  fileFilter: function (_req, file, cb) {
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'application/pdf'];
+    if (ALLOWED_TYPES.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de arquivo não permitido'), false);
+    }
+  },
+});
+
+exports.uploadFile = [
+  upload.single('upfile'),
+  (req, res) => {
+    if (!req.file) {
+      return res.status(400).json({ error: 'No file uploaded or invalid file type' });
+    }
+
+    const fileMetadata = {
+      name: req.file.originalname,
+      type: req.file.mimetype,
+      size: req.file.size,
+    };
+
+    // Limpeza do arquivo após o processamento
+    fs.unlink(req.file.path, err => {
+      if (err) console.error('Erro ao remover arquivo temporário:', err);
+    });
+
+    res.json(fileMetadata);
+  },
+];
+<fim do arquivo './controllers/fileMetadataController.js'>
+
+<início do arquivo './controllers/helloController.js'>
+exports.getHello = (_req, res) => {
+  res.json({ greeting: 'hello API' });
+};
+<fim do arquivo './controllers/helloController.js'>
+
+<início do arquivo './controllers/homeController.js'>
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const path = require('path');
+
+// Cria uma instância do aplicativo Express
+const app = express();
+
+// Configurações de middleware
+app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(express.static('public'));
+
+// Define o caminho para as visualizações
+const pathViews = path.join(__dirname, '..', 'views');
+
+// Adiciona o middleware para servir arquivos estáticos
+app.use(express.static(pathViews));
+app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Rota raiz que serve uma página HTML
+app.get('/', function (_req, res) {
+  res.sendFile('index.html', { root: pathViews });
+});
+
+// Redirecionamento de /api/ para /api/date
+app.get('/api/', function (_req, res) {
+  res.redirect('/api/date');
+});
+
+// Importa e usa os roteadores de diferentes módulos
+const helloRoutes = require('../routes/helloRoutes');
+const whoamiRoutes = require('../routes/whoamiRoutes');
+const urlShortenerRoutes = require('../routes/urlShortenerRoutes');
+const exerciseTrackerRoutes = require('../routes/exerciseTrackerRoutes');
+const fileMetadataRoutes = require('../routes/fileMetadataRoutes');
+const dateRoutes = require('../routes/dateRoutes');
+
+// Usa os roteadores para os diferentes caminhos da API
+app.use('/api/hello', helloRoutes);
+app.use('/api/whoami', whoamiRoutes);
+app.use('/api/shorturl', urlShortenerRoutes);
+app.use('/api/users', exerciseTrackerRoutes);
+app.use('/api/fileanalyse', fileMetadataRoutes);
+app.use('/api', dateRoutes);
+
+// Exporta o aplicativo configurado
+module.exports = app;
+<fim do arquivo './controllers/homeController.js'>
+
+<início do arquivo './controllers/urlShortenerController.js'>
+
+const dns = require('dns');
+
+let urlDatabase = {};
+let urlCounter = 1;
+
+exports.createShortUrl = (req, res) => {
+    const url = req.body.url;
+
+    let hostname;
+    try {
+        const myURL = new URL(url);
+        hostname = myURL.hostname;
+    } catch (err) {
+        return res.json({ error: 'invalid url' });
+    }
+
+    dns.lookup(hostname, err => {
+        if (err) {
+            return res.json({ error: 'invalid url' });
+        }
+
+        let shortUrl = Object.keys(urlDatabase).find(key => urlDatabase[key] === url);
+
+        if (!shortUrl) {
+            shortUrl = urlCounter++;
+            urlDatabase[shortUrl] = url;
+        }
+
+        res.json({ original_url: url, short_url: shortUrl });
+    });
+};
+
+exports.redirectShortUrl = (req, res) => {
+    const shortUrl = req.params.shortUrl;
+    const originalUrl = urlDatabase[shortUrl];
+
+    if (originalUrl) {
+        res.redirect(originalUrl);
+    } else {
+        res.json({ error: 'No short URL found for the given input' });
+    }
+};
+<fim do arquivo './controllers/urlShortenerController.js'>
+
+<início do arquivo './controllers/whoamiController.js'>
+exports.getWhoami = (req, res) => {
+  const ipaddress = req.ip || req.socket.remoteAddress;
+  const language = req.headers['accept-language'];
+  const software = req.headers['user-agent'];
+
+  res.json({
+    ipaddress: ipaddress,
+    language: language,
+    software: software,
+  });
+};
+<fim do arquivo './controllers/whoamiController.js'>
+
+<início do arquivo './models/exerciseTrackerModel.js'>
+// Simulação de banco de dados na memória para usuários
+const users = [];
+
+// Simulação de banco de dados na memória para exercícios
+const exercises = [];
+
+module.exports = {
+  users,
+  exercises,
+};
+<fim do arquivo './models/exerciseTrackerModel.js'>
+
+<início do arquivo './package.json'>
+{
+  "name": "freecodecamp-backend",
+  "version": "0.1.0",
+  "description": "Back End Development and APIs",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm install",
+    "start": "node api/index.js",
+    "watch": "nodemon api/index.js"
+  },
+  "dependencies": {
+    "@eslint/config-array": "^0.19.0",
+    "@eslint/object-schema": "^2.1.4",
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "eslint": "^9.15.0",
+    "express": "^4.18.1",
+    "glob": "^11.0.0",
+    "multer": "^1.4.5-lts.1",
+    "rimraf": "^6.0.1",
+    "uuid": "^11.0.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/afqbrito/freecodecamp-backend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/afqbrito/freecodecamp-backend/issues"
+  },
+  "homepage": "https://github.com/afqbrito/freecodecamp-backend#readme",
+  "author": "Adriano Fabio Brito <adriano.fabio@gmail.com>",
+  "keywords": [
+    "freeCodeCamp",
+    "backend",
+    "node",
+    "express"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "nodemon": "^3.1.7"
+  }
+}
+<fim do arquivo './package.json'>
+
+<início do arquivo './routes/dateRoutes.js'>
+const express = require('express');
+const router = express.Router();
+const dateController = require('../controllers/dateController');
+
+// Rota específica para /api/date sem parâmetros
+router.get('/date', (req, res) => {
+  dateController.getDate(req, res);
+});
+
+// Rota para /api com parâmetro opcional
+router.get('/:date', dateController.getDate);
+
+module.exports = router;
+<fim do arquivo './routes/dateRoutes.js'>
+
+<início do arquivo './routes/exerciseTrackerRoutes.js'>
+const express = require('express');
+const router = express.Router();
+const usersController = require('../controllers/exerciseTrackerController');
+
+router.post('/', usersController.createUser);
+router.get('/', usersController.getAllUsers);
+
+router.post('/:_id/exercises', usersController.addExercise);
+router.get('/:_id/logs', usersController.getExerciseLog);
+
+module.exports = router;
+<fim do arquivo './routes/exerciseTrackerRoutes.js'>
+
+<início do arquivo './routes/fileMetadataRoutes.js'>
+const express = require('express');
+const router = express.Router();
+const fileMetadataController = require('../controllers/fileMetadataController');
+
+router.post('/', fileMetadataController.uploadFile);
+
+module.exports = router;
+<fim do arquivo './routes/fileMetadataRoutes.js'>
+
+<início do arquivo './routes/helloRoutes.js'>
+const express = require('express');
+const router = express.Router();
+const helloController = require('../controllers/helloController');
+
+router.get('/', helloController.getHello);
+
+module.exports = router;
+<fim do arquivo './routes/helloRoutes.js'>
+
+<início do arquivo './routes/urlShortenerRoutes.js'>
+const express = require('express');
+const router = express.Router();
+const urlShortenerController = require('../controllers/urlShortenerController');
+
+router.post('/', urlShortenerController.createShortUrl);
+router.get('/:shortUrl', urlShortenerController.redirectShortUrl);
+
+module.exports = router;
+<fim do arquivo './routes/urlShortenerRoutes.js'>
+
+<início do arquivo './routes/whoamiRoutes.js'>
+const express = require('express');
+const router = express.Router();
+const whoamiController = require('../controllers/whoamiController');
+
+router.get('/', whoamiController.getWhoami);
+
+module.exports = router;
+<fim do arquivo './routes/whoamiRoutes.js'>
+
